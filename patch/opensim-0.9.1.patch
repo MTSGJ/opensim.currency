@@ -1,0 +1,15 @@
+diff -Nur OpenSim-/Framework/Servers/HttpServer/BaseHttpServer.cs OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs
+--- OpenSim-/Framework/Servers/HttpServer/BaseHttpServer.cs	2019-02-13 17:07:00.037657561 +0900
++++ OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs	2019-02-13 17:29:49.371393303 +0900
+@@ -158,6 +158,11 @@
+             m_port = port;
+         }
+ 
++        public RemoteCertificateValidationCallback CertificateValidationCallback
++        {
++            set { m_certificateValidationCallback = value; }
++        }
++
+         private void load_cert(string CPath, string CPass)
+         {
+             try

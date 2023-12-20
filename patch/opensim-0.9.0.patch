@@ -1,0 +1,46 @@
+diff -Nur OpenSim-/Framework/Servers/HttpServer/BaseHttpServer.cs OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs
+--- OpenSim-/Framework/Servers/HttpServer/BaseHttpServer.cs	2018-04-22 14:34:37.642698003 +0900
++++ OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs	2018-04-22 14:35:35.331826307 +0900
+@@ -1094,6 +1094,10 @@
+ 
+                         if (gridproxy)
+                             xmlRprcRequest.Params.Add("gridproxy");  // Param[4]
++
++                        // by Fumi.Iseki for DTLNSLMoneyServer
++                        xmlRprcRequest.Params.Add(request.IHttpClientContext.SSLCommonName); // Param[4] or Param[5]
++
+                         try
+                         {
+                             xmlRpcResponse = method(xmlRprcRequest, request.RemoteIPEndPoint);
+diff -Nur OpenSim-/Framework/Servers/Tests/OSHttpTests.cs OpenSim/Framework/Servers/Tests/OSHttpTests.cs
+--- OpenSim-/Framework/Servers/Tests/OSHttpTests.cs	2018-04-22 14:34:37.643698006 +0900
++++ OpenSim/Framework/Servers/Tests/OSHttpTests.cs	2018-04-22 14:35:35.331826307 +0900
+@@ -62,6 +62,12 @@
+                 _secured = secured;
+             }
+ 
++            // by Fumi.Iseki for DTLNSLMoenyServer
++            public string SSLCommonName
++            {
++                get { return "";}
++            }
++
+             public void Disconnect(SocketError error) {}
+             public void Respond(string httpVersion, HttpStatusCode statusCode, string reason, string body) {}
+             public void Respond(string httpVersion, HttpStatusCode statusCode, string reason) {}
+diff -Nur OpenSim-/Tests/Common/Mock/TestHttpClientContext.cs OpenSim/Tests/Common/Mock/TestHttpClientContext.cs
+--- OpenSim-/Tests/Common/Mock/TestHttpClientContext.cs	2018-04-22 14:34:37.643698006 +0900
++++ OpenSim/Tests/Common/Mock/TestHttpClientContext.cs	2018-04-22 14:35:35.332826313 +0900
+@@ -72,6 +72,12 @@
+ //            Console.WriteLine("TestHttpClientContext.Disconnect Received disconnect with status {0}", error);
+         }
+ 
++        // by Fumi.Iseki for DTLNSLMoenyServer
++        public string SSLCommonName
++        {
++            get { return "";}
++        }
++
+         public void Respond(string httpVersion, HttpStatusCode statusCode, string reason, string body) {Console.WriteLine("x");}
+         public void Respond(string httpVersion, HttpStatusCode statusCode, string reason) {Console.WriteLine("xx");}
+         public void Respond(string body) { Console.WriteLine("xxx");}

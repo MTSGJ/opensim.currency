@@ -1,0 +1,112 @@
+diff -Nur HttpServer-/HttpClientContext.cs HttpServer/HttpClientContext.cs
+--- HttpServer-/HttpClientContext.cs	2013-10-21 13:08:30.861101971 +0900
++++ HttpServer/HttpClientContext.cs	2013-10-21 15:17:40.493510079 +0900
+@@ -6,6 +6,10 @@
+ using HttpServer.Exceptions;
+ using HttpServer.Parser;
+ 
++// by Fumi.Iseki
++using System.Net.Security;
++using System.Security.Cryptography.X509Certificates;
++
+ namespace HttpServer
+ {
+     /// <summary>
+@@ -92,6 +96,18 @@
+             _sock = sock;
+             _buffer = new byte[bufferSize];
+ 
++            // by Fumi.Iseki
++            SSLCommonName = "";
++            if (secured)
++            {
++                SslStream _ssl = (SslStream)_stream;
++                X509Certificate _cert1 = _ssl.RemoteCertificate;
++                if (_cert1 != null)
++                {
++                    X509Certificate2 _cert2 = new X509Certificate2(_cert1);
++                    if (_cert2 != null) SSLCommonName = _cert2.GetNameInfo(X509NameType.SimpleName, false);
++                }
++            }
+         }
+ 
+         public bool EndWhenDone
+@@ -215,6 +231,11 @@
+         /// </summary>
+         public bool IsSecured { get; internal set; }
+ 
++        //
++        //
++        // by Fumi.Iseki
++        public string SSLCommonName { get; internal set; }
++
+         /// <summary>
+         /// Specify which logger to use.
+         /// </summary>
+diff -Nur HttpServer-/HttpContextFactory.cs HttpServer/HttpContextFactory.cs
+--- HttpServer-/HttpContextFactory.cs	2013-10-21 13:08:30.861101971 +0900
++++ HttpServer/HttpContextFactory.cs	2013-10-21 15:19:36.431821703 +0900
+@@ -20,6 +20,10 @@
+         private readonly ILogWriter _logWriter;
+         private readonly ContextTimeoutManager _contextTimeoutManager;
+ 
++        // by Fumi.Iseki
++        public  static RemoteCertificateValidationCallback ClientCertificateValidationCallback = null;
++        private RemoteCertificateValidationCallback _clientCallback = null;
++
+         /// <summary>
+         /// Initializes a new instance of the <see cref="HttpContextFactory"/> class.
+         /// </summary>
+@@ -32,6 +36,13 @@
+             _bufferSize = bufferSize;
+             _factory = factory;
+             _contextTimeoutManager = new ContextTimeoutManager(ContextTimeoutManager.MonitorType.Thread);
++
++            // by Fumi.Iseki
++            if (ClientCertificateValidationCallback != null)
++            {
++                _clientCallback = ClientCertificateValidationCallback;
++                ClientCertificateValidationCallback = null;
++            }
+         }
+ 
+         ///<summary>
+@@ -132,11 +143,21 @@
+ 			var networkStream = new ReusableSocketNetworkStream(socket, true);
+             var remoteEndPoint = (IPEndPoint) socket.RemoteEndPoint;
+ 
+-            var sslStream = new SslStream(networkStream, false);
++            // by Fumi.Iseki
++            SslStream sslStream = null;
+             try
+             {
+                 //TODO: this may fail
+-                sslStream.AuthenticateAsServer(certificate, false, protocol, false);
++                if (_clientCallback == null)    // by Fumi.Iseki
++                {
++                    sslStream = new SslStream(networkStream, false);
++                    sslStream.AuthenticateAsServer(certificate, false, protocol, false);
++                }
++                else
++                {
++                    sslStream = new SslStream(networkStream, false, new RemoteCertificateValidationCallback(_clientCallback));
++                    sslStream.AuthenticateAsServer(certificate, true, protocol, false);
++                }
+                 return CreateContext(true, remoteEndPoint, sslStream, socket);
+             }
+             catch (IOException err)
+diff -Nur HttpServer-/IHttpClientContext.cs HttpServer/IHttpClientContext.cs
+--- HttpServer-/IHttpClientContext.cs	2013-10-21 13:08:30.865101913 +0900
++++ HttpServer/IHttpClientContext.cs	2013-10-21 15:17:40.518509254 +0900
+@@ -9,6 +9,11 @@
+     /// </summary>
+     public interface IHttpClientContext
+     {
++        //
++        //
++        // by Fumi.Iseki
++        string SSLCommonName { get; }
++
+         /// <summary>
+         /// Using SSL or other encryption method.
+         /// </summary>

@@ -1,0 +1,30 @@
+diff -Nur OpenSim-/Framework/Servers/HttpServer/OSHttpServer/HttpClientContext.cs OpenSim/Framework/Servers/HttpServer/OSHttpServer/HttpClientContext.cs
+--- OpenSim-/Framework/Servers/HttpServer/OSHttpServer/HttpClientContext.cs	2023-06-02 17:03:08.247494109 +0900
++++ OpenSim/Framework/Servers/HttpServer/OSHttpServer/HttpClientContext.cs	2023-06-02 17:07:01.767935412 +0900
+@@ -10,6 +10,8 @@
+ using System.Security.Cryptography.X509Certificates;
+ using OpenMetaverse;
+ 
++using System.Text.RegularExpressions;
++
+ namespace OSHttpServer
+ {
+     /// <summary>
+@@ -133,8 +135,15 @@
+                 if (_cert1 != null)
+                 {
+                     X509Certificate2 _cert2 = new X509Certificate2(_cert1);
+-                    if (_cert2 != null)
+-                        SSLCommonName = _cert2.GetNameInfo(X509NameType.SimpleName, false);
++                    if (_cert2 != null) {
++                        string _sbj = _cert2.Subject.ToString();
++                        Match _cn = Regex.Match(_sbj, @"CN=(.*?),");
++                        if (_cn.Success) {
++                            SSLCommonName = _cn.Groups[1].Value;
++                        }
++                        //
++                        //SSLCommonName = _cert2.GetNameInfo(X509NameType.SimpleName, false);
++                    }
+                 }
+             }
+ 

@@ -1,0 +1,26 @@
+diff -Nur opensim/OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs opensim+/OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs
+--- opensim/OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs	2014-05-17 16:15:44.791286687 +0900
++++ opensim+/OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs	2014-05-17 16:24:12.446449197 +0900
+@@ -1053,6 +1053,7 @@
+                             }
+                         }
+                         xmlRprcRequest.Params.Add(request.Headers.Get(xff)); // Param[3]
++                        xmlRprcRequest.Params.Add(request.IHttpClientContext.SSLCommonName); // Param[4]
+ 
+                         try
+                         {
+diff -Nur opensim/OpenSim/Tests/Common/Mock/TestHttpClientContext.cs opensim+/OpenSim/Tests/Common/Mock/TestHttpClientContext.cs
+--- opensim/OpenSim/Tests/Common/Mock/TestHttpClientContext.cs	2014-05-17 15:48:53.785383361 +0900
++++ opensim+/OpenSim/Tests/Common/Mock/TestHttpClientContext.cs	2014-05-17 16:23:40.934998601 +0900
+@@ -71,6 +71,11 @@
+ //            Console.WriteLine("TestHttpClientContext.Disconnect Received disconnect with status {0}", error);
+         }
+ 
++        public string SSLCommonName
++        {
++            get { return "";}
++        }
++
+         public void Respond(string httpVersion, HttpStatusCode statusCode, string reason, string body) {Console.WriteLine("x");}
+         public void Respond(string httpVersion, HttpStatusCode statusCode, string reason) {Console.WriteLine("xx");}
+         public void Respond(string body) { Console.WriteLine("xxx");}

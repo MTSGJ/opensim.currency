@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Prebuild version="1.10" xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.10.xsd">
+  <Solution name="OpenSim.Currency" activeConfig="Release" path="./" version="0.9-$Rev$" frameworkVersion="net6_0">
+    <Configuration name="Debug">
+      <Options>
+        <CompilerDefines>TRACE;DEBUG</CompilerDefines>
+        <OptimizeCode>false</OptimizeCode>
+        <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
+        <AllowUnsafe>false</AllowUnsafe>
+        <WarningLevel>4</WarningLevel>
+        <WarningsAsErrors>false</WarningsAsErrors>
+        <SuppressWarnings></SuppressWarnings>
+        <OutputPath>bin</OutputPath>
+        <DebugInformation>true</DebugInformation>
+        <IncrementalBuild>true</IncrementalBuild>
+        <NoStdLib>false</NoStdLib>
+      </Options>
+    </Configuration>
+    <Configuration name="Release">
+      <Options>
+        <CompilerDefines>TRACE</CompilerDefines>
+        <OptimizeCode>true</OptimizeCode>
+        <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
+        <AllowUnsafe>false</AllowUnsafe>
+        <WarningLevel>4</WarningLevel>
+        <WarningsAsErrors>false</WarningsAsErrors>
+        <SuppressWarnings></SuppressWarnings>
+        <OutputPath>bin</OutputPath>
+        <DebugInformation>false</DebugInformation>
+        <IncrementalBuild>true</IncrementalBuild>
+        <NoStdLib>false</NoStdLib>
+      </Options>
+    </Configuration>
+
+    <Project name="OpenSim.Data.MySQL.MySQLMoneyDataWrapper" path="OpenSim.Data.MySQL.MySQLMoneyDataWrapper" type="Library">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../bin/</OutputPath>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../bin/</ReferencePath>
+      <Reference name="Nini.dll" path="../../bin/"/>
+      <Reference name="log4net.dll" path="../../bin/"/>
+      <Reference name="XMLRPC.dll" path="../../bin/"/>
+      <Reference name="MySql.Data" path="../../bin/"/>
+      <Reference name="Mono.Addins.dll" path="../../bin/"/>
+      <Reference name="OpenMetaverseTypes.dll" path="../../bin/"/>
+      <Reference name="OpenMetaverse.dll" path="../../bin/"/>
+      <Reference name="OpenSim.Region.Framework" path="../../bin/"/>
+      <Reference name="OpenSim.Framework" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Console" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Servers" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Servers.HttpServer" path="../../bin/"/>
+      <Reference name="OpenSim.Services.Interfaces" path="../../bin/"/>
+      <Reference name="OpenSim.Server.Base" path="../../bin/"/>
+      <Reference name="OpenSim.Data" path="../../bin/"/>
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
+
+
+    <Project name="OpenSim.Modules.Currency" path="OpenSim.Modules.Currency" type="Library">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../bin/</OutputPath>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../bin/</ReferencePath>
+      <Reference name="Mono.Security"/>
+      <Reference name="Nini.dll" path="../../bin/"/>
+      <Reference name="log4net.dll" path="../../bin/"/>
+      <Reference name="XMLRPC.dll" path="../../bin/"/>
+      <Reference name="Mono.Addins.dll" path="../../bin/"/>
+      <Reference name="OpenMetaverseTypes.dll" path="../../bin/"/>
+      <Reference name="OpenMetaverse.dll" path="../../bin/"/>
+      <Reference name="OpenSim.Region.Framework" path="../../bin/"/>
+      <Reference name="OpenSim.Framework" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Console" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Servers" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Servers.HttpServer" path="../../bin/"/>
+      <Reference name="OpenSim.Services.Interfaces" path="../../bin/"/>
+      <Reference name="OpenSim.Server.Base" path="../../bin/"/>
+      <Reference name="OpenSim.Data" path="../../bin/"/>
+      <Reference name="OpenSim.Data.MySQL.MySQLMoneyDataWrapper" path="../bin/"/>
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
+
+
+    <Project name="MoneyServer" path="OpenSim.Grid.MoneyServer" type="Exe">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <ReferencePath>../../bin/</ReferencePath>
+      <Reference name="Mono.Security"/>
+      <Reference name="Nini.dll" path="../../bin/"/>
+      <Reference name="log4net.dll" path="../../bin/"/>
+      <Reference name="XMLRPC.dll" path="../../bin/"/>
+      <Reference name="MySql.Data" path="../../bin/"/>
+      <Reference name="Mono.Addins.dll" path="../../bin/"/>
+      <Reference name="OpenMetaverseTypes.dll" path="../../bin/"/>
+      <Reference name="OpenMetaverse.dll" path="../../bin/"/>
+      <Reference name="OpenSim.Region.Framework" path="../../bin/"/>
+      <Reference name="OpenSim.Framework" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Console" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Servers" path="../../bin/"/>
+      <Reference name="OpenSim.Framework.Servers.HttpServer" path="../../bin/"/>
+      <Reference name="OpenSim.Services.Interfaces" path="../../bin/"/>
+      <Reference name="OpenSim.Server.Base" path="../../bin/"/>
+      <Reference name="OpenSim.Data" path="../../bin/"/>
+      <Reference name="OpenSim.Data.MySQL.MySQLMoneyDataWrapper" path="../bin/"/>
+      <Reference name="OpenSim.Modules.Currency" path="../bin/"/>
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
+
+
+  </Solution>
+</Prebuild>
+

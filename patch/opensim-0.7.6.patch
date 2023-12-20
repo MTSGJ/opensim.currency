@@ -1,0 +1,26 @@
+diff -Nur opensim-0.7.6-source-/OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs opensim-0.7.6-source/OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs
+--- opensim-0.7.6-source-/OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs	2013-10-05 04:45:02.000000000 +0900
++++ opensim-0.7.6-source/OpenSim/Framework/Servers/HttpServer/BaseHttpServer.cs	2013-10-19 22:14:51.000000000 +0900
+@@ -1021,6 +1021,7 @@
+                             }
+                         }
+                         xmlRprcRequest.Params.Add(request.Headers.Get(xff)); // Param[3]
++                        xmlRprcRequest.Params.Add(request.IHttpClientContext.SSLCommonName); // Param[4]
+ 
+                         try
+                         {
+diff -Nur opensim-0.7.6-source-/OpenSim/Framework/Servers/Tests/OSHttpTests.cs opensim-0.7.6-source/OpenSim/Framework/Servers/Tests/OSHttpTests.cs
+--- opensim-0.7.6-source-/OpenSim/Framework/Servers/Tests/OSHttpTests.cs	2013-10-05 04:45:02.000000000 +0900
++++ opensim-0.7.6-source/OpenSim/Framework/Servers/Tests/OSHttpTests.cs	2013-10-19 22:14:51.000000000 +0900
+@@ -60,6 +60,11 @@
+                 _secured = secured;
+             }
+ 
++            public string SSLCommonName
++            {
++                get { return "";}
++            }
++
+             public void Disconnect(SocketError error) {}
+             public void Respond(string httpVersion, HttpStatusCode statusCode, string reason, string body) {}
+             public void Respond(string httpVersion, HttpStatusCode statusCode, string reason) {}

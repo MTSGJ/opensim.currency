@@ -1,0 +1,109 @@
+diff -Nur HttpServer-/HttpClientContext.cs HttpServer/HttpClientContext.cs
+--- HttpServer-/HttpClientContext.cs	2013-02-01 18:39:44.868009882 +0900
++++ HttpServer/HttpClientContext.cs	2013-02-01 18:45:07.740259535 +0900
+@@ -6,6 +6,9 @@
+ using HttpServer.Exceptions;
+ using HttpServer.Parser;
+ 
++using System.Net.Security;
++using System.Security.Cryptography.X509Certificates;
++
+ namespace HttpServer
+ {
+     /// <summary>
+@@ -77,6 +80,18 @@
+            
+             _buffer = new byte[bufferSize];
+ 
++            // by Fumi.Iseki
++            SSLCommonName = "";
++            if (secured)
++            {
++                SslStream _ssl = (SslStream)_stream;
++                X509Certificate _cert1 = _ssl.RemoteCertificate;
++                if (_cert1 != null)
++                {
++                    X509Certificate2 _cert2 = new X509Certificate2(_cert1);
++                    if (_cert2 != null) SSLCommonName = _cert2.GetNameInfo(X509NameType.SimpleName, false);
++                }
++            }
+         }
+ 
+         public bool EndWhenDone
+@@ -185,6 +200,11 @@
+         /// </summary>
+         public bool IsSecured { get; internal set; }
+ 
++        //
++        //
++        // by Fumi.Iseki
++        public string SSLCommonName { get; internal set; }
++
+         /// <summary>
+         /// Specify which logger to use.
+         /// </summary>
+diff -Nur HttpServer-/HttpContextFactory.cs HttpServer/HttpContextFactory.cs
+--- HttpServer-/HttpContextFactory.cs	2013-02-01 18:39:44.868009882 +0900
++++ HttpServer/HttpContextFactory.cs	2013-02-01 18:44:42.408133328 +0900
+@@ -19,6 +19,10 @@
+         private readonly IRequestParserFactory _factory;
+         private readonly ILogWriter _logWriter;
+ 
++        // by Fumi.Iseki
++        public  static RemoteCertificateValidationCallback ClientCertificateValidationCallback = null;
++        private RemoteCertificateValidationCallback _clientCallback = null;
++
+         /// <summary>
+         /// Initializes a new instance of the <see cref="HttpContextFactory"/> class.
+         /// </summary>
+@@ -30,6 +34,13 @@
+             _logWriter = writer;
+             _bufferSize = bufferSize;
+             _factory = factory;
++
++            // by Fumi.Iseki
++            if (ClientCertificateValidationCallback != null)
++            {
++                _clientCallback = ClientCertificateValidationCallback;
++                ClientCertificateValidationCallback = null;
++            }
+         }
+ 
+         ///<summary>
+@@ -127,11 +138,19 @@
+ 			var networkStream = new ReusableSocketNetworkStream(socket, true);
+             var remoteEndPoint = (IPEndPoint) socket.RemoteEndPoint;
+ 
+-            var sslStream = new SslStream(networkStream, false);
++            // by Fumi.Iseki
++            var sslStream = new SslStream(networkStream, false, new RemoteCertificateValidationCallback(_clientCallback));
+             try
+             {
+                 //TODO: this may fail
+-                sslStream.AuthenticateAsServer(certificate, false, protocol, false);
++                if (_clientCallback == null)    // by Fumi.Iseki
++                {
++                    sslStream.AuthenticateAsServer(certificate, false, protocol, false);
++                }
++                else
++                {
++                    sslStream.AuthenticateAsServer(certificate, true, protocol, false);
++                }
+                 return CreateContext(true, remoteEndPoint, sslStream, socket);
+             }
+             catch (IOException err)
+diff -Nur HttpServer-/IHttpClientContext.cs HttpServer/IHttpClientContext.cs
+--- HttpServer-/IHttpClientContext.cs	2013-02-01 18:39:44.872009815 +0900
++++ HttpServer/IHttpClientContext.cs	2013-02-01 18:44:05.196259567 +0900
+@@ -9,6 +9,11 @@
+     /// </summary>
+     public interface IHttpClientContext
+     {
++        //
++        //
++        // by Fumi.Iseki
++        string SSLCommonName { get; }
++
+         /// <summary>
+         /// Using SSL or other encryption method.
+         /// </summary>

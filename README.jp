@@ -1,0 +1,138 @@
+
+////////////////////////////////////////////////////////////////////////////////////////////
+//
+//  OpenSim DTL/NSL Secure Money Server for Linux/Unix
+//                                                        by Fumi.Iseki and NSL 
+//                                                        http://www.nsl.tuis.ac.jp
+
+0. はじめに
+
+　これは DTL Currency Processing Project から Web Monitor を取り外して，いくつかのバグフィックスと 
+0.9.xで動作するようにパッチを充てた物です．
+  また幾つかの機能拡張も行っています．Web Monitor を取り外したのは，我々のターゲットが主に
+Linuxであるのに対して，この機能 ASP.NETで作動しており，Linux上で動作させるのが困難だったためです．
+
+　従って，セキュリティ的には本来の DTL Money Serverよりも低下していると思われます．実際，この
+Money Serverを誤魔化すことも不可能ではありません．つまり，このシステムについては厳密に仮想通貨
+を取り扱いたい環境での使用はお勧めできません．本システムを使用する場合は，あくまでも自己責任で
+お使いください．
+
+
+1. インストール
+
+1) OpenSim をコンパイルするか，コンポいる済みの OpenSim を用意します．
+
+2) Mono を使用する場合
+ # cd opensim
+ # svn co http://www.nsl.tuis.ac.jp/svn/opensim/opensim.currency/trunk opensim.currency
+ # cd opensim.currensy
+ # ./build.sh
+
+2) dotnet を使用する場合
+ # cd opensim
+ # svn co http://www.nsl.tuis.ac.jp/svn/opensim/opensim.currency/trunk opensim.currency
+ # cd opensim.currensy
+ # ./build.net.sh
+
+
+2. 設定
+
+2-1. Money Server
+
+  bin/MoneyServer.ini の [MySql] に MySQLサーバにアクセスするための情報を追加する
+
+ # cd opensim-0.9.x-source
+ # vi bin/MoneyServer.ini 
+
+  1. [MySql]セクションの hostname, database, username, password を設定する．
+     OpenSim のMySQLの設定と同じものを指定すれば良い．
+  2. バンカーアバター（システムから対価無しにMoneyを購入することが可能なアバター）を有効にするには
+     [MoneyServer]セクションの "BankerAvatar" にバンカーアバターとなるアバターのUUIDを指定する．
+     UUIDとして 00000000-0000-0000-0000-000000000000を指定した場合は，全てのアバターがバンカーアバターとなる．
+  3. 支払い者がログインしていない状態でも，llGiveMoney()を正常に動かす場合は
+     [MoneyServer]セクションの "enableForceTransfer" を trueにする．
+  4. PHPスクリプトの send_money() を使用して，お金をアバターに振り込む場合は "enableScriptSendMoney" を trueにする．
+     また，"MoneyScriptAccessKey", "MoneyScriptIPaddress" も設定が必要である．
+	"MoneyScriptAccessKey" はスクリプトへのアクセスキーであり，include/config.php または WI(XoopenSim/Modlos) と同じものを設定する．
+	"MoneyScriptIPaddress" にはスクリプトが動作するサーバのIPアドレスを記述する．127.0.0.1は使用しないこと．
+  5. 所持金のアップデートのメッセージ(青いダイアログ)を変更することが可能である．メッセージを変更したい場合は各 "BalanceMessage..."
+     を有効にし内容を書き換える．
+
+  参考： http://www.nsl.tuis.ac.jp/xoops/modules/xpwiki/?OpenSim%2FMoneyServer%2FMoneyServer.ini
+
+
+2-2. Region Server
+
+  bin/OpenSim.ini に MoneyServerに接続するための設定を行う．Money Serverには HTTPS
+を使用して接続を行う．この際に使用するポート番号は 8008である．
+
+ # cd opensim-0.9.x-source
+ # vi bin/OpenSim.ini 
+
+ [Economy]
+   SellEnabled = "true"
+   CurrencyServer = "https://(MoneyServer's Name or IP):8008/"
+   UserServer = "http://(UserServer's Name or IP):8002"
+   EconomyModule  = DTLNSLMoneyModule
+
+   ;; Money Unit fee to upload textures, animations etc
+   PriceUpload = 10			;; テクスチャなどのアップロードのコスト
+
+   ;; Money Unit fee to create groups
+   PriceGroupCreate = 100	;; グループ作成のコスト
+
+
+ 注）モジュールの名前が DTLNSLMoneyModule に変更になりました．
+     なお，UserServer と CurrencyServer のアドレスに localhost (127.0.0.1)を使用しないこと．
+     これは，アドレスが，Monet Server内でのユーザのアカウント識別に利用されるためである．
+
+ 参考： http://www.nsl.tuis.ac.jp/xoops/modules/xpwiki/?OpenSim%2FMoneyServer%2FOpenSim.ini
+
+
+2-3. Helper スクリプト
+ 
+  Webインターフェイスの XoopenSimまたは Modlosを使用しない場合，ヘルパースクリプトを手動で設置
+なければならない．ヘルパースクリプトは Scriptsディレクトリにあるので，これを適当なディレクトリ
+にコピーし，inculde/helper.php の内容（主に ENV_HELPER_URL, ENV_HELPER_PATH, DB関連）をシステム
+に合わせて変更する．
+
+ コマンド例)
+ # mkdir /var/www/currency
+ # cp -Rpd Scripts/* /var/www/currency
+ # cd /var/www/currency
+ # ./setup_scripts.sh
+ # chown -R www-data.www-data .
+ # vi include/config.php
+
+  Viewerは "-helperuri [ENV_HELPER_URL/]" オプション付きで起動しなければならない．ここで ENV_HELPER_URL
+ヘルパースクリプトの helperディレクトリのURLである．
+ 例) -helperuri http://localhost/currency/helper/      最後の / は必ず必要!!
+
+ 参考： http://www.nsl.tuis.ac.jp/xoops/modules/xpwiki/?OpenSim%2FMoneyServer%2FHelper%20Script
+
+
+3. ライセンス
+
+  MIT License
+
+
+4. 注意事項
+
+　このソフトウェアはNSLで改造された非公式のソフトウェアです．このソフトウェアに関して OpenSimの開発チームや
+　DTL Currency Processingの開発チームへのお問い合わせは行わないでください．
+
+
+5. 免責
+
+　このソフトウェアは全くの無保証です．このソフトウェアの使用・改造・再配布に伴い発生する問題に関して，作者は一切の
+  責任を負いません．全て自己責任でご使用ください．
+
+
+6. 謝辞
+
+  このプログラムは DTL Curremcy Processing を改造したものです．
+
+  このプロジェクトに関して，Miloから沢山のアドバイスと寄付をいただきました．
+
+  ありがとうございました．
+
