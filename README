@@ -22,13 +22,13 @@ Attention)
 
 2) When you use mono
  # cd opensim
- # svn co http://www.nsl.tuis.ac.jp/svn/opensim/opensim.currency/trunk opensim.currency
+ # git clone https://github.com/MTSGJ/opensim.currency.git
  # cd opensim.currensy
  # ./build.sh
 
 3) When you use dotnet
  # cd opensim
- # svn co http://www.nsl.tuis.ac.jp/svn/opensim/opensim.currency/trunk opensim.currency
+ # git clone https://github.com/MTSGJ/opensim.currency.git
  # cd opensim.currensy
  # ./build.net.sh
 
