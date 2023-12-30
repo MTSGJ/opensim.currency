@@ -1,6 +1,6 @@
 # DTL/NSL Secure Money Server for Linux/Unix
 - by Fumi.Iseki and NSL
-- http://www.nsl.tuis.ac.jp
+  - http://www.nsl.tuis.ac.jp
 - [Wiki](https://polaris.star-dust.jp/pukiwiki/?OpenSim/MoneyServer)
 
 ## 0. Outline
