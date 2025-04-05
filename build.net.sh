@@ -2,22 +2,22 @@
 
 CONFIGPATH=./config
 OPNSIMPATH=../bin
-DOTNETVER=6.0
+DOTNETVER=9
 
 echo "==================="
 echo "DTL/NSL_CURRENCY"
 echo "==================="
 
 ./clean.sh
-./runprebuild.net.sh
+./runprebuild.net.sh $DOTNETVER
 dotnet build -c Release OpenSim.Currency.sln || exit 1
 
 echo
-cp -f bin/net${DOTNETVER}/OpenSim.Data.MySQL.MySQLMoneyDataWrapper.dll $OPNSIMPATH
-cp -f bin/net${DOTNETVER}/OpenSim.Modules.Currency.dll $OPNSIMPATH
-cp -f bin/net${DOTNETVER}/MoneyServer.dll $OPNSIMPATH
-cp -f bin/net${DOTNETVER}/MoneyServer $OPNSIMPATH
-cp -f bin/net${DOTNETVER}/MoneyServer.runtimeconfig.json $OPNSIMPATH
+cp -f bin/net${DOTNETVER}.0/OpenSim.Data.MySQL.MySQLMoneyDataWrapper.dll $OPNSIMPATH
+cp -f bin/net${DOTNETVER}.0/OpenSim.Modules.Currency.dll $OPNSIMPATH
+cp -f bin/net${DOTNETVER}.0/MoneyServer.dll $OPNSIMPATH
+cp -f bin/net${DOTNETVER}.0/MoneyServer $OPNSIMPATH
+cp -f bin/net${DOTNETVER}.0/MoneyServer.runtimeconfig.json $OPNSIMPATH
 
 #
 rm -f $OPNSIMPATH/OpenSim.Forge.Currency.dll

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Prebuild version="1.10" xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.10.xsd">
-  <Solution name="OpenSim.Currency" activeConfig="Release" path="./" version="0.9-$Rev$" frameworkVersion="net6_0">
+  <Solution name="OpenSim.Currency" activeConfig="Release" path="./" version="0.9-$Rev$" frameworkVersion="net9_0">
     <Configuration name="Debug">
       <Options>
         <CompilerDefines>TRACE;DEBUG</CompilerDefines>
