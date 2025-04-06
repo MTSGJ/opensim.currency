@@ -75,7 +75,10 @@ namespace NSL.Certificate.Tools
         public void SetPrivateCert(string certfile, string passwd)
         {
             try {
+
+#pragma warning disable SYSLIB0057  // Use X509CertificateLoader instead to load certificates (.NET9)
                 m_mycert = new X509Certificate2(certfile, passwd);
+#pragma warning restore SYSLIB0057
             }
             catch (Exception ex) {
                 m_mycert = null;
@@ -100,7 +103,9 @@ namespace NSL.Certificate.Tools
         public void SetPrivateCA(string certfile)
         {
             try {
+#pragma warning disable SYSLIB0057  // Use X509CertificateLoader instead to load certificates (.NET9)
                 m_cacert = new X509Certificate2(certfile);
+#pragma warning restore SYSLIB0057
             }
             catch (Exception ex) {
                 m_cacert = null;

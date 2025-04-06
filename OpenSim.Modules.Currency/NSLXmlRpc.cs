@@ -48,9 +48,9 @@ namespace NSL.Network.XmlRpc
         {
             m_log.InfoFormat("[MONEY NSL XMLRPC]: XmlRpcResponse certSend: connect to {0}", url);
 
-//#pragma warning disable SYSLIB0014  // Use HttpClient instead of WebRequest.Create.
+#pragma warning disable SYSLIB0014  // Use HttpClient instead of WebRequest.Create.
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-//#pragma warning restore SYSLIB0014
+#pragma warning restore SYSLIB0014
             if (request==null) {
                 throw new XmlRpcException(XmlRpcErrorCodes.TRANSPORT_ERROR, XmlRpcErrorCodes.TRANSPORT_ERROR_MSG +": Could not create request with " + url);
             }
