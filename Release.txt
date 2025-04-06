@@ -1,4 +1,7 @@
 
+DTL/NSL Money Server v0.9.3.1  (2024 4/6)
+    for .Net9
+
 DTL/NSL Money Server v0.9.3.0  (2023 8/11)
     for .Net6
 
