@@ -1818,8 +1818,8 @@ namespace OpenSim.Modules.Currency
             XmlRpcResponse moneyServResp = null;
             try {
                 NSLXmlRpcRequest moneyModuleReq = new NSLXmlRpcRequest(method, arrayParams);
-                //moneyServResp = moneyModuleReq.certSend(m_moneyServURL, m_cert, m_checkServerCert, MONEYMODULE_REQUEST_TIMEOUT);
                 moneyServResp = moneyModuleReq.certSend(m_moneyServURL, m_certVerify, m_checkServerCert, MONEYMODULE_REQUEST_TIMEOUT);
+                //moneyServResp = moneyModuleReq.certSendAsync(m_moneyServURL, m_certVerify, m_checkServerCert, MONEYMODULE_REQUEST_TIMEOUT).Result;
             }
             catch (Exception ex) {
                 m_log.ErrorFormat("[MONEY MODULE]: genericCurrencyXMLRPCRequest: Unable to connect to Money Server {0}", m_moneyServURL);

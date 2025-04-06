@@ -9,9 +9,12 @@ using System.Collections;
 using System.IO;
 using System.Xml;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
+
 using log4net;
 using Nwc.XmlRpc;
 
@@ -110,6 +113,76 @@ namespace NSL.Network.XmlRpc
             input.Close();
             response.Close();
             return resp;
+        }
+
+
+        public async Task<XmlRpcResponse> certSendAsync(string url, NSLCertificateVerify certVerify, bool checkServerCert, int timeout)
+        {
+            m_log.InfoFormat("[MONEY NSL XMLRPC]: XmlRpcResponse certSendAsync: connect to {0}", url);
+
+            X509Certificate2 clientCert = null;
+
+            // ハンドラ設定
+            var handler = new HttpClientHandler
+            {
+                ClientCertificateOptions = ClientCertificateOption.Manual,
+            };
+
+            if (certVerify != null)
+            {
+                clientCert = certVerify.GetPrivateCert();
+                if (clientCert != null)
+                {
+                    handler.ClientCertificates.Add(clientCert);
+                }
+
+                handler.ServerCertificateCustomValidationCallback = certVerify.ValidateServerCertificate;
+            }
+            else if (!checkServerCert)
+            {
+                handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+            }
+
+            using var httpClient = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromMilliseconds(timeout)
+            };
+
+            // XML-RPC のシリアライズ
+            string requestXml;
+            using (var stringWriter = new StringWriter())
+            {
+                using var xmlWriter = new XmlTextWriter(stringWriter) { Formatting = Formatting.Indented };
+                _serializer.Serialize(xmlWriter, this);
+                xmlWriter.Flush();
+                requestXml = stringWriter.ToString();
+            }
+
+            // リクエストボディの作成
+            var content = new StringContent(requestXml, _encoding, "text/xml");
+            content.Headers.Add("User-Agent", "NSLXmlRpcRequest");
+
+            if (!checkServerCert)
+            {
+                content.Headers.Add("NoVerifyCert", "true");
+            }
+
+            // リクエスト送信
+            HttpResponseMessage response;
+            try
+            {
+                response = await httpClient.PostAsync(url, content);
+            }
+            catch (Exception ex)
+            {
+                m_log.ErrorFormat("[MONEY NSL XMLRPC]: XmlRpcResponse certSendAsync: PostAsync Error: {0}", ex.ToString());
+                return null;
+            }
+
+            // レスポンス取得
+            string responseXml = await response.Content.ReadAsStringAsync();
+
+            return (XmlRpcResponse)_deserializer.Deserialize(responseXml);
         }
     }
 }
