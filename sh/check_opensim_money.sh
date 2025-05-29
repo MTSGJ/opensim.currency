@@ -17,14 +17,14 @@ if [ ! -f LOGFL ]; then
     touch $LOGFL
 fi
 
-DT=`date`
+DT=`date +%Y-%m-%d" "%T`
 
 if ! nc -z -w $TIMEOUT $HOST $PORT; then
-    echo "Attention: Money Server Https Port is stopped: "$DT >> $LOGFL
+    echo $DT" ERROR - Money Server Https Port is stopped." >> $LOGFL
     /usr/bin/tmux send-keys -t opensim_money C-m "quit" C-m
     sleep 5
     systemctl start opensim_money.net.service
     exit 1
 else
-    echo "Money Server Https Port is checked: "$DT >> $LOGFL
+    echo $DT" INFO  - Money Server Https Port is checked." >> $LOGFL
 fi
