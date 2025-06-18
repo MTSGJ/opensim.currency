@@ -21,9 +21,7 @@ DT=`date +%Y-%m-%d" "%T`
 
 if ! nc -z -w $TIMEOUT $HOST $PORT; then
     echo $DT" ERROR - Money Server Https Port is stopped." >> $LOGFL
-    /usr/bin/tmux send-keys -t opensim_money C-m "quit" C-m
-    sleep 5
-    systemctl start opensim_money.net.service
+    systemctl restart opensim_money.net.service
     exit 1
 else
     echo $DT" INFO  - Money Server Https Port is checked." >> $LOGFL
