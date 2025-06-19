@@ -3,7 +3,7 @@
 # Usage ... ./build.net.sh [dotnet_version]
 #
 
-DOTNETVER=9.0
+DOTNETVER=8.0
 
 CONFIGPATH=./config
 OPNSIMPATH=../bin
